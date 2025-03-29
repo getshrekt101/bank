@@ -6,6 +6,7 @@ import com.algomau.bank.dto.request.TransactionRequestDto;
 import com.algomau.bank.dto.response.TransactionResponseDto;
 import com.algomau.bank.exception.NotFoundException;
 import com.algomau.bank.lib.BeanUtil;
+import com.algomau.bank.validator.TransactionRequestDtoValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 
@@ -31,14 +32,16 @@ public class TransactionService {
     }
 
     public TransactionResponseDto createTransaction(TransactionRequestDto accountRequestDto) {
+        TransactionRequestDtoValidator.assertValid(accountRequestDto);
         var Transaction = modelMapper.map(accountRequestDto, Transaction.class);
         return modelMapper.map(transactionRepository.save(Transaction), TransactionResponseDto.class);
     }
 
     public TransactionResponseDto updateTransaction(TransactionRequestDto accountRequestDto, UUID id) {
+        TransactionRequestDtoValidator.assertValid(accountRequestDto);
         com.algomau.bank.domain.Transaction savedTransaction = transactionRepository.findById(id).orElseThrow(() -> new NotFoundException("not-found", "transaction not found."));
         var Transaction = modelMapper.map(accountRequestDto, Transaction.class);
-        BeanUtil.copyNonNullProperties(Transaction, savedTransaction, "id");
+        BeanUtils.copyProperties(Transaction, savedTransaction, "id");
         return modelMapper.map(transactionRepository.save(savedTransaction), TransactionResponseDto.class);
     }
 

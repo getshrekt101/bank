@@ -12,10 +12,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
+@EnableMethodSecurity
 public class BankConfiguration {
 
     @Bean
@@ -39,8 +41,8 @@ public class BankConfiguration {
     }
 
     @Bean
-    public UserService userService(UserRepository userRepository, ModelMapper modelMapper) {
-        return new UserService(userRepository, modelMapper);
+    public UserService userService(UserRepository userRepository, ModelMapper modelMapper, UserAccountService userAccountService) {
+        return new UserService(userRepository, modelMapper, userAccountService);
     }
 
 }

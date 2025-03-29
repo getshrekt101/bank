@@ -1,12 +1,10 @@
 package com.algomau.bank.dto.request;
 
-import com.algomau.bank.dto.response.AccountResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 
@@ -15,9 +13,9 @@ import java.util.UUID;
 @Data
 @Builder
 public class TransactionRequestDto {
-    private BigDecimal amount;
+    private Double amount;
     private String itemName;
-    private UUID organizationName;
+    private String organizationName;
     private Status status;
     public AccountRequestDto account;
 

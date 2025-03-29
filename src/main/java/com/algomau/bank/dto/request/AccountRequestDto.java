@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,7 +17,7 @@ import java.util.UUID;
 @Data
 @Builder
 public class AccountRequestDto {
-    private BigDecimal balance;
+    private Double balance;
     private Type type;
     private BankRequestDto bank;
     private UserRequestDto user;

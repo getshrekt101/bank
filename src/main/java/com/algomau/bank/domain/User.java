@@ -52,7 +52,7 @@ public class User {
     private LocalDateTime updatedDate;
 
     public enum Type {
-        BUSINESS,
-        PERSONAL;
+        EMPLOYEE,
+        CUSTOMER,
     }
 }

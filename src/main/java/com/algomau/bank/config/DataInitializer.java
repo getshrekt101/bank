@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.UUID;
 
 @Configuration
@@ -27,13 +28,12 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner seedEntities() {
         return args -> {
-            String adminUsername = "admin";
             UserAccount admin = UserAccount.builder()
-                    .userName(adminUsername)
+                    .userName("admin")
                     .password(passwordEncoder.encode("admin"))
                     .user(User.builder()
                             .email("admin@algomau.com")
-                            .type(User.Type.BUSINESS)
+                            .type(User.Type.EMPLOYEE)
                             .sinNumber(UUID.randomUUID().toString())
                             .address(Address.builder()
                                     .city("admin")
@@ -43,11 +43,47 @@ public class DataInitializer {
                                     .type(Address.Type.BUSINESS)
                                     .build())
                             .build())
-                    .role(UserAccount.Role.ADMIN)
+                    .role(UserAccount.Role.ROLE_ADMIN)
                     .build();
 
-            userAccountRepository.save(admin);
-            log.info("✅ Admin user created.");
+            UserAccount user = UserAccount.builder()
+                    .userName("user")
+                    .password(passwordEncoder.encode("user"))
+                    .user(User.builder()
+                            .email("user@algomau.com")
+                            .type(User.Type.CUSTOMER)
+                            .sinNumber(UUID.randomUUID().toString())
+                            .address(Address.builder()
+                                    .city("user")
+                                    .country("CA")
+                                    .phone("647-222-5555")
+                                    .state("ON")
+                                    .type(Address.Type.BUSINESS)
+                                    .build())
+                            .build())
+                    .role(UserAccount.Role.ROLE_USER)
+                    .build();
+
+            UserAccount teller = UserAccount.builder()
+                    .userName("teller")
+                    .password(passwordEncoder.encode("teller"))
+                    .user(User.builder()
+                            .email("teller@algomau.com")
+                            .type(User.Type.EMPLOYEE)
+                            .sinNumber(UUID.randomUUID().toString())
+                            .address(Address.builder()
+                                    .city("teller")
+                                    .country("CA")
+                                    .phone("647-222-5555")
+                                    .state("ON")
+                                    .type(Address.Type.PERSONAL)
+                                    .build())
+                            .build())
+                    .role(UserAccount.Role.ROLE_TELLER)
+                    .build();
+
+            userAccountRepository.saveAll(List.of(admin, user, teller));
+            log.info("✅ Admin,User, and teller users created.");
 
             Bank bank= Bank.builder()
                     .code("COSC")
@@ -64,7 +100,6 @@ public class DataInitializer {
                     .build();
             bankRepository.save(bank);
             log.info("✅ Bank created.");
-
         };
     }
 }

@@ -10,7 +10,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -28,13 +27,13 @@ public class Transaction {
     private UUID id;
 
     @Column(name = "amount")
-    private BigDecimal amount;
+    private double amount;
 
     @Column(name = "item_name")
     private String itemName;
 
     @Column(name = "organization_name")
-    private UUID organizationName;
+    private String organizationName;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")

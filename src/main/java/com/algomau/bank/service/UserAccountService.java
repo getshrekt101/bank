@@ -6,7 +6,10 @@ import com.algomau.bank.dto.request.UserAccountRequestDto;
 import com.algomau.bank.dto.response.UserAccountResponseDto;
 import com.algomau.bank.exception.NotFoundException;
 import com.algomau.bank.lib.BeanUtil;
+import com.algomau.bank.validator.AccountRequestDtoValidator;
+import com.algomau.bank.validator.UserAccountRequestDtoValidator;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -33,18 +36,16 @@ public class UserAccountService {
     }
 
     public UserAccountResponseDto createUserAccount(UserAccountRequestDto userAccount) {
+        UserAccountRequestDtoValidator.assertValid(userAccount);
         UserAccount user = modelMapper.map(userAccount, UserAccount.class);
         return modelMapper.map(userAccountRepository.save(user), UserAccountResponseDto.class);
     }
 
     public UserAccountResponseDto updateUserAccount(UserAccountRequestDto userAccount, UUID id) {
+        UserAccountRequestDtoValidator.assertValid(userAccount);
         UserAccount savedUserAccount = userAccountRepository.findById(id).orElseThrow(() -> new NotFoundException("not-found", "user-account not found."));
         UserAccount user = modelMapper.map(userAccount, UserAccount.class);
-        if (user.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(savedUserAccount.getPassword()));
-        }
-        BeanUtil.copyNonNullProperties(user, savedUserAccount, "id");
-
+        BeanUtils.copyProperties(user, savedUserAccount, "id");
         return modelMapper.map(userAccountRepository.save(savedUserAccount), UserAccountResponseDto.class);
     }
 

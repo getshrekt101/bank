@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 
@@ -16,9 +15,9 @@ import java.util.UUID;
 public class TransactionResponseDto {
 
     private UUID id;
-    private BigDecimal amount;
+    private Double amount;
     private String itemName;
-    private UUID organizationName;
+    private String organizationName;
     private Status status;
     public AccountResponseDto account;
 

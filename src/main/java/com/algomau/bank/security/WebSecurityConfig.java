@@ -1,10 +1,10 @@
 package com.algomau.bank.security;
 
 import com.algomau.bank.domain.UserAccount;
-import com.algomau.bank.dto.response.UserAccountResponseDto;
 import com.algomau.bank.service.UserAccountService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -34,19 +34,37 @@ public class WebSecurityConfig {
                 .headers(headers -> headers.frameOptions().disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/h2-console/**",
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/v3/**")
-                        .permitAll()
-                        .requestMatchers("/useraccount/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**", "/account/**", "/transaction/**").authenticated()
+                        // Public access
+                        .requestMatchers("/h2-console/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/**").permitAll()
+
+                        // Admin-only endpoints
+                        .requestMatchers("/useraccounts/**").hasRole("ADMIN")
+
+                        // DELETE - only Admins can delete
+                        .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
+
+                        // TELLER access
+                        .requestMatchers(HttpMethod.GET, "/users/**").hasAnyRole("TELLER", "ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/users/**").hasAnyRole("TELLER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/users/**").hasAnyRole("TELLER", "ADMIN", "USER")
+
+                        .requestMatchers(HttpMethod.GET, "/accounts/**", "/transactions/**").hasAnyRole("TELLER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/accounts/**", "/transactions/**").hasAnyRole("TELLER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/accounts/**", "/transactions/**").hasAnyRole("TELLER", "ADMIN")
+
+                        // USER permissions
+                        .requestMatchers(HttpMethod.GET, "/users/**", "/accounts/**", "/transactions/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT, "/users/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/transactions/**").hasRole("USER")
+
+                        // All others must be authenticated
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());
+
         return http.build();
     }
+
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -60,7 +78,7 @@ public class WebSecurityConfig {
             return User.builder()
                     .username(account.getUserName())
                     .password(account.getPassword())
-                    .roles(account.getRole().name())
+                    .authorities(account.getRole().name())
                     .build();
         };
     }

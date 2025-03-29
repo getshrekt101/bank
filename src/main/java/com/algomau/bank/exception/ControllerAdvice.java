@@ -1,11 +1,9 @@
 package com.algomau.bank.exception;
 
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+//@org.springframework.web.bind.annotation.ControllerAdvice
 public class ControllerAdvice {
 
 
@@ -14,6 +12,14 @@ public class ControllerAdvice {
         return ResponseEntity.status(e.getHttpStatus()).body(ErrorResponse.builder()
                 .message(e.getReason())
                 .reasonCode(e.getReasonCode())
+                .build());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> exception(Exception e) {
+        return ResponseEntity.status(500).body(ErrorResponse.builder()
+                        .message(e.getMessage())
+                        .reasonCode("server-error")
                 .build());
     }
 }
