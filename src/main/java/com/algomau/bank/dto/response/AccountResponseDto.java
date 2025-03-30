@@ -22,7 +22,7 @@ public class AccountResponseDto {
     private Double balance;
     private AccountRequestDto.Type type;
     private BankResponseDto bank;
-    private UserRequestDto user;
+    private UserResponseDto user;
     @JsonBackReference
     private List<TransactionResponseDto> transactions;
 

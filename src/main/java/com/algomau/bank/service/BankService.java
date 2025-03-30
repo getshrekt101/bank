@@ -5,9 +5,11 @@ import com.algomau.bank.domain.repository.BankRepository;
 import com.algomau.bank.dto.request.BankRequestDto;
 import com.algomau.bank.dto.response.BankResponseDto;
 import com.algomau.bank.exception.NotFoundException;
+import com.algomau.bank.lib.BeanUtil;
 import com.algomau.bank.validator.BankRequestDtoValidator;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 import java.util.UUID;
@@ -41,7 +43,11 @@ public class BankService {
         BankRequestDtoValidator.assertValid(bankRequestDto);
         Bank bank = bankRepository.findById(id).orElseThrow(() -> new NotFoundException("not-found", "bank not found."));
         Bank request = modelMapper.map(bankRequestDto, Bank.class);
-        return modelMapper.map(bankRepository.save(request), BankResponseDto.class);
+        if (request.getAddress() != null) {
+            modelMapper.map(request.getAddress(), bank.getAddress());
+        }
+        modelMapper.map(request, bank);
+        return modelMapper.map(bankRepository.save(bank), BankResponseDto.class);
     }
 
     public void deleteBank(UUID id) {

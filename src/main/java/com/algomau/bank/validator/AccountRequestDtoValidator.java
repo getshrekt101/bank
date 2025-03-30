@@ -24,20 +24,13 @@ public class AccountRequestDtoValidator {
             errors.add("Account type is required");
         }
 
-        if (dto.getBank() == null) {
+        if (dto.getBankId() == null) {
             errors.add("Bank details are required");
-        } else {
-            List<String> bankErrors = BankRequestDtoValidator.validate(dto.getBank());
-            errors.addAll(bankErrors);
         }
 
-        if (dto.getUser() == null) {
+        if (dto.getUserId() == null) {
             errors.add("User details are required");
-        } else {
-            List<String> userErrors = UserRequestDtoValidator.validate(dto.getUser());
-            errors.addAll(userErrors);
         }
-
         return errors;
     }
 
