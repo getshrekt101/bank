@@ -1,5 +1,6 @@
 package com.algomau.bank.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,8 @@ public class TransactionResponseDto {
     private String itemName;
     private String organizationName;
     private Status status;
-    public AccountResponseDto account;
+    @JsonManagedReference
+    private AccountResponseDto account;
 
     public enum Status {
         PENDING,

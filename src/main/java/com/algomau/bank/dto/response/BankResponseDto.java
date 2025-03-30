@@ -18,7 +18,6 @@ public class BankResponseDto {
     private String code;
     private String branchNumber;
     private Type type;
-    private UUID accountNumber;
     private AddressResponseDto address;
 
     public enum Type {

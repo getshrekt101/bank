@@ -22,6 +22,7 @@ public class TransactionController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_TELLER') or hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')")
     public ResponseEntity<TransactionResponseDto> getTransaction(@PathVariable UUID id) {
         TransactionResponseDto response = transactionService.getTransaction(id);
         return ResponseEntity.ok(response);
@@ -35,6 +36,7 @@ public class TransactionController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_TELLER') or hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')")
     public ResponseEntity<TransactionResponseDto> createTransaction(@RequestBody TransactionRequestDto transactionRequestDto) {
         TransactionResponseDto response = transactionService.createTransaction(transactionRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -42,12 +44,14 @@ public class TransactionController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_TELLER') or hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<TransactionResponseDto> updateTransaction(@PathVariable UUID id, @RequestBody TransactionRequestDto transactionRequestDto) {
         TransactionResponseDto response = transactionService.updateTransaction(transactionRequestDto, id);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteTransaction(@PathVariable UUID id) {
         transactionService.deleteTransaction(id);
         return ResponseEntity.ok().build();

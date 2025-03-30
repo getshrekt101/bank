@@ -5,9 +5,9 @@ import com.algomau.bank.domain.repository.AccountRepository;
 import com.algomau.bank.dto.request.AccountRequestDto;
 import com.algomau.bank.dto.response.AccountResponseDto;
 import com.algomau.bank.exception.NotFoundException;
-import com.algomau.bank.lib.BeanUtil;
 import com.algomau.bank.validator.AccountRequestDtoValidator;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
@@ -24,11 +24,12 @@ public class AccountService {
     }
 
     public AccountResponseDto getAccount(UUID id) {
-        return modelMapper.map(accountRepository.findById(id), AccountResponseDto.class);
+        Account account = accountRepository.findById(id).orElseThrow(() -> new NotFoundException("not-found", "account not found."));
+        return modelMapper.map(account, AccountResponseDto.class);
     }
 
     public List<AccountResponseDto> getAccounts() {
-        return modelMapper.map(accountRepository.findAll(), List.class);
+        return modelMapper.map(accountRepository.findAll(),  new TypeToken<List<AccountResponseDto>>() {}.getType());
     }
 
     public AccountResponseDto addAccount(AccountRequestDto accountRequestDto) {
@@ -40,7 +41,6 @@ public class AccountService {
         AccountRequestDtoValidator.assertValid(accountRequestDto);
         Account savedAccount = accountRepository.findById(id).orElseThrow(() -> new NotFoundException("not-found", "account not found."));
         var account = modelMapper.map(accountRequestDto, Account.class);
-        BeanUtils.copyProperties(account, savedAccount, "id");
         return modelMapper.map(accountRepository.save(savedAccount), AccountResponseDto.class);
     }
 

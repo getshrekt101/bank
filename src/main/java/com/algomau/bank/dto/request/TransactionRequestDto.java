@@ -17,7 +17,7 @@ public class TransactionRequestDto {
     private String itemName;
     private String organizationName;
     private Status status;
-    public AccountRequestDto account;
+    private UUID accountId;
 
     public enum Status {
         PENDING,

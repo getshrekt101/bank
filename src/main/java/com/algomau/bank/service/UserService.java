@@ -7,18 +7,15 @@ import com.algomau.bank.dto.request.UserRequestDto;
 import com.algomau.bank.dto.response.UserResponseDto;
 import com.algomau.bank.exception.NotFoundException;
 import com.algomau.bank.exception.UnauthorizedException;
-import com.algomau.bank.lib.BeanUtil;
 import com.algomau.bank.validator.UserRequestDtoValidator;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import static com.algomau.bank.lib.SecurityUtils.getCurrentUser;
-import static com.algomau.bank.lib.SecurityUtils.getCurrentUserRoles;
+import static com.algomau.bank.domain.UserAccount.Role.ROLE_USER;
 
 public class UserService {
 
@@ -33,12 +30,17 @@ public class UserService {
     }
 
     public UserResponseDto getUser(UUID id) {
-        UserAccount byUserName = getUserAccount(id);
-        return modelMapper.map(byUserName.getUser(), UserResponseDto.class);
+        UserAccount userAccountBySecurityContext = userAccountService.getUserAccountBySecurityContext();
+        User savedUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("not-found", "user not found."));
+        if (ROLE_USER.equals(userAccountBySecurityContext.getRole()) &&
+                !savedUser.getId().equals(userAccountBySecurityContext.getUser().getId())) {
+            throw new UnauthorizedException("unauthorized", "user not authorized.");
+        }
+        return modelMapper.map(savedUser, UserResponseDto.class);
     }
 
     public List<UserResponseDto> getAllUser() {
-        return modelMapper.map(userRepository.findAll(), List.class);
+        return modelMapper.map(userRepository.findAll(), new TypeToken<List<UserResponseDto>>() {}.getType());
     }
 
     public UserResponseDto createUser(UserRequestDto userResponseDto) {
@@ -47,23 +49,22 @@ public class UserService {
         return modelMapper.map(userRepository.save(user), UserResponseDto.class);
     }
 
-    public UserResponseDto updateUser(UserRequestDto userResponseDto, UUID id) {
-        UserRequestDtoValidator.assertValid(userResponseDto);
-        UserAccount userAccount = getUserAccount(id);
-        User user = modelMapper.map(userResponseDto, User.class);
-        BeanUtils.copyProperties(user, userAccount.getUser(), "id");
-        return modelMapper.map(userRepository.save(userAccount.getUser()), UserResponseDto.class);
+    public UserResponseDto updateUser(UserRequestDto requestDto, UUID id) {
+        UserRequestDtoValidator.assertValid(requestDto);
+        UserAccount userAccountBySecurityContext = userAccountService.getUserAccountBySecurityContext();
+        User savedUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("not-found", "user not found."));
+
+        if (ROLE_USER.equals(userAccountBySecurityContext.getRole()) &&
+                !savedUser.getId().equals(userAccountBySecurityContext.getUser().getId())) {
+            throw new UnauthorizedException("unauthorized", "user not authorized.");
+        }
+
+        User user = modelMapper.map(requestDto, User.class);
+        BeanUtils.copyProperties(user, savedUser, "id");
+        return modelMapper.map(userRepository.save(savedUser), UserResponseDto.class);
     }
 
     public void deleteUser(UUID id) {
         userRepository.deleteById(id);
-    }
-
-    private UserAccount getUserAccount(UUID id) {
-        UserAccount byUserName = userAccountService.findByUserName(getCurrentUser().getUsername());
-        if (id != byUserName.getUser().getId()) {
-            throw new UnauthorizedException("unauthorized", "user not authorized.");
-        }
-        return byUserName;
     }
 }

@@ -38,10 +38,6 @@ public class AccountRequestDtoValidator {
             errors.addAll(userErrors);
         }
 
-        if (dto.getAccountNumber() == null) {
-            errors.add("Account number is required");
-        }
-
         return errors;
     }
 

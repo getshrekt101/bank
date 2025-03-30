@@ -1,5 +1,6 @@
 package com.algomau.bank.dto.response;
 
+import com.algomau.bank.dto.request.UserRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,9 +17,8 @@ public class UserAccountResponseDto {
     private UUID id;
     private Role role;
     private String userName;
-    private String password;
-    public UserResponseDto user;
+    public UserRequestDto user;
     public enum Role {
-        USER, ADMIN;
+        ROLE_USER, ROLE_ADMIN, ROLE_TELLER;
     }
 }

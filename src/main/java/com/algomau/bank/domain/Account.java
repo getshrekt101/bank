@@ -1,5 +1,7 @@
 package com.algomau.bank.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,19 +36,19 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private Type type;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.MERGE)
+    @JsonManagedReference
+    private List<Transaction> transactions;
+
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "bank_id")
+    @JsonBackReference(value = "bank-account")
     private Bank bank;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="user_id")
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "user_id")
+    @JsonBackReference(value = "user-account")
     private User user;
-
-    @Column(name = "account_number")
-    private UUID accountNumber;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Transaction> transactions;
 
     @CreatedDate
     @Column(name = "created_date")

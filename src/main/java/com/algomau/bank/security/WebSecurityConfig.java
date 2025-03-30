@@ -4,7 +4,6 @@ import com.algomau.bank.domain.UserAccount;
 import com.algomau.bank.service.UserAccountService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,27 +35,6 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public access
                         .requestMatchers("/h2-console/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/**").permitAll()
-
-                        // Admin-only endpoints
-                        .requestMatchers("/useraccounts/**").hasRole("ADMIN")
-
-                        // DELETE - only Admins can delete
-                        .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
-
-                        // TELLER access
-                        .requestMatchers(HttpMethod.GET, "/users/**").hasAnyRole("TELLER", "ADMIN", "USER")
-                        .requestMatchers(HttpMethod.POST, "/users/**").hasAnyRole("TELLER", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/users/**").hasAnyRole("TELLER", "ADMIN", "USER")
-
-                        .requestMatchers(HttpMethod.GET, "/accounts/**", "/transactions/**").hasAnyRole("TELLER", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/accounts/**", "/transactions/**").hasAnyRole("TELLER", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/accounts/**", "/transactions/**").hasAnyRole("TELLER", "ADMIN")
-
-                        // USER permissions
-                        .requestMatchers(HttpMethod.GET, "/users/**", "/accounts/**", "/transactions/**").hasRole("USER")
-                        .requestMatchers(HttpMethod.PUT, "/users/**").hasRole("USER")
-                        .requestMatchers(HttpMethod.POST, "/transactions/**").hasRole("USER")
-
                         // All others must be authenticated
                         .anyRequest().authenticated()
                 )

@@ -16,6 +16,6 @@ public class UserAccountRequestDto {
     private String password;
     public UserRequestDto user;
     public enum Role {
-        USER, ADMIN;
+        ROLE_USER, ROLE_ADMIN, ROLE_TELLER;
     }
 }

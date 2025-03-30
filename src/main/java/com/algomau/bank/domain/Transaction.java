@@ -1,5 +1,6 @@
 package com.algomau.bank.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,9 +40,10 @@ public class Transaction {
     @Column(name = "status")
     private Status status;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="account_id")
-    public Account account;
+    @ManyToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "account_id")
+    @JsonBackReference
+    private Account account;
 
     @CreatedDate
     @Column(name = "created_date")

@@ -1,5 +1,6 @@
 package com.algomau.bank.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -42,6 +44,10 @@ public class User {
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private Type type;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.MERGE)
+    @JsonManagedReference(value = "user-account")
+    private List<Account> accounts;
 
     @CreatedDate
     @Column(name = "created_date")

@@ -1,12 +1,9 @@
 package com.algomau.bank.dto.request;
 
-import com.algomau.bank.dto.response.AddressResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.UUID;
 
 
 @AllArgsConstructor
@@ -21,7 +18,7 @@ public class UserRequestDto {
     private Type type;
 
     public enum Type {
-        BUSINESS,
-        PERSONAL;
+        EMPLOYEE,
+        CUSTOMER,
     }
 }

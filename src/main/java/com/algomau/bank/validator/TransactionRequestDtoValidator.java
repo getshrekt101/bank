@@ -29,22 +29,14 @@ public class TransactionRequestDtoValidator {
             errors.add("Item name is required");
         }
 
-        // Organization name
-        if (dto.getOrganizationName() == null) {
-            errors.add("Organization is required");
-        }
-
         // Status
         if (dto.getStatus() == null) {
             errors.add("Transaction status is required");
         }
 
         // Account
-        if (dto.getAccount() == null) {
+        if (dto.getAccountId() == null) {
             errors.add("Associated account is required");
-        } else {
-            List<String> accountErrors = AccountRequestDtoValidator.validate(dto.getAccount());
-            errors.addAll(accountErrors);
         }
 
         return errors;

@@ -1,10 +1,9 @@
 package com.algomau.bank.config;
 
-import com.algomau.bank.domain.Address;
-import com.algomau.bank.domain.Bank;
-import com.algomau.bank.domain.User;
-import com.algomau.bank.domain.UserAccount;
+import com.algomau.bank.domain.*;
+import com.algomau.bank.domain.repository.AccountRepository;
 import com.algomau.bank.domain.repository.BankRepository;
+import com.algomau.bank.domain.repository.TransactionRepository;
 import com.algomau.bank.domain.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +22,8 @@ public class DataInitializer {
 
     private final UserAccountRepository userAccountRepository;
     private final BankRepository bankRepository;
+    private final TransactionRepository transactionRepository;
+    private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Bean
@@ -83,7 +84,7 @@ public class DataInitializer {
                     .build();
 
             userAccountRepository.saveAll(List.of(admin, user, teller));
-            log.info("✅ Admin,User, and teller users created.");
+            log.info("✅ User Accounts created.");
 
             Bank bank= Bank.builder()
                     .code("COSC")
@@ -98,8 +99,28 @@ public class DataInitializer {
                     .name("Algoma Bank")
                     .branchNumber("3506")
                     .build();
-            bankRepository.save(bank);
+            Bank save = bankRepository.save(bank);
             log.info("✅ Bank created.");
+
+            Account account = accountRepository.save(Account.builder()
+                     .balance(10.0)
+                    .type(Account.Type.CHEQUEING)
+                    .bank(bank)
+                    .user(user.getUser())
+                    .build());
+
+            log.info("✅ Account created.");
+
+            Transaction transaction = transactionRepository.save(Transaction.builder()
+                    .account(account)
+                    .amount(10)
+                            .status(Transaction.Status.COMPLETED)
+                    .itemName("test")
+                    .organizationName("test")
+                    .build());
+
+            log.info("✅ Transaction created.");
+
         };
     }
 }

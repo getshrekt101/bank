@@ -34,10 +34,6 @@ public class BankRequestDtoValidator {
             errors.add("Bank type is required");
         }
 
-        if (dto.getAccountNumber() == null) {
-            errors.add("Bank account number is required");
-        }
-
         if (dto.getAddress() == null) {
             errors.add("Bank address is required");
         } else {

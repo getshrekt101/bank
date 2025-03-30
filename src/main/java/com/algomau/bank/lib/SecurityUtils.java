@@ -13,7 +13,7 @@ public class SecurityUtils {
                 .getAuthentication()
                 .getAuthorities()
                 .stream()
-                .map(GrantedAuthority::getAuthority) // e.g., "ROLE_ADMIN"
+                .map(GrantedAuthority::getAuthority)
                 .toList();
     }
 

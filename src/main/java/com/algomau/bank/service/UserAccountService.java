@@ -5,15 +5,15 @@ import com.algomau.bank.domain.repository.UserAccountRepository;
 import com.algomau.bank.dto.request.UserAccountRequestDto;
 import com.algomau.bank.dto.response.UserAccountResponseDto;
 import com.algomau.bank.exception.NotFoundException;
-import com.algomau.bank.lib.BeanUtil;
-import com.algomau.bank.validator.AccountRequestDtoValidator;
 import com.algomau.bank.validator.UserAccountRequestDtoValidator;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.BeanUtils;
+import org.modelmapper.TypeToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.UUID;
+
+import static com.algomau.bank.lib.SecurityUtils.getCurrentUser;
 
 public class UserAccountService {
 
@@ -28,11 +28,12 @@ public class UserAccountService {
     }
 
     public UserAccountResponseDto getUserAccount(UUID id) {
-        return modelMapper.map(userAccountRepository.findById(id), UserAccountResponseDto.class);
+        UserAccount userAccount = userAccountRepository.findById(id).orElseThrow(() -> new NotFoundException("not-found", "user-account not found."));
+        return modelMapper.map(userAccount, UserAccountResponseDto.class);
     }
 
     public List<UserAccountResponseDto> getUserAccounts() {
-        return modelMapper.map(userAccountRepository.findAll(), List.class);
+        return modelMapper.map(userAccountRepository.findAll(), new TypeToken<List<UserAccountResponseDto>>() {}.getType());
     }
 
     public UserAccountResponseDto createUserAccount(UserAccountRequestDto userAccount) {
@@ -45,7 +46,6 @@ public class UserAccountService {
         UserAccountRequestDtoValidator.assertValid(userAccount);
         UserAccount savedUserAccount = userAccountRepository.findById(id).orElseThrow(() -> new NotFoundException("not-found", "user-account not found."));
         UserAccount user = modelMapper.map(userAccount, UserAccount.class);
-        BeanUtils.copyProperties(user, savedUserAccount, "id");
         return modelMapper.map(userAccountRepository.save(savedUserAccount), UserAccountResponseDto.class);
     }
 
@@ -55,5 +55,9 @@ public class UserAccountService {
 
     public UserAccount findByUserName(String username) {
         return userAccountRepository.findByUserName(username);
+    }
+
+    public UserAccount getUserAccountBySecurityContext() {
+        return userAccountRepository.findByUserName(getCurrentUser().getUsername());
     }
 }

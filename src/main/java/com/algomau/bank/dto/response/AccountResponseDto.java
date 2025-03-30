@@ -1,5 +1,8 @@
 package com.algomau.bank.dto.response;
 
+import com.algomau.bank.dto.request.AccountRequestDto;
+import com.algomau.bank.dto.request.UserRequestDto;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,10 +20,10 @@ public class AccountResponseDto {
 
     private UUID id;
     private Double balance;
-    private Type type;
+    private AccountRequestDto.Type type;
     private BankResponseDto bank;
-    private UserResponseDto user;
-    private UUID accountNumber;
+    private UserRequestDto user;
+    @JsonBackReference
     private List<TransactionResponseDto> transactions;
 
     public enum Type {

@@ -21,7 +21,7 @@ public class UserResponseDto {
     private Type type;
 
     public enum Type {
-        BUSINESS,
-        PERSONAL;
+        EMPLOYEE,
+        CUSTOMER,
     }
 }

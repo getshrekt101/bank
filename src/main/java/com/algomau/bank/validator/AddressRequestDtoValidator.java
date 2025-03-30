@@ -19,27 +19,27 @@ public class AddressRequestDtoValidator {
             return errors;
         }
 
-        if (isBlank(dto.getStreet())) {
+        if (dto.getStreet() != null && isBlank(dto.getStreet())) {
             errors.add("Street is required");
         }
 
-        if (isBlank(dto.getCity())) {
+        if (dto.getStreet() != null && isBlank(dto.getCity())) {
             errors.add("City is required");
         }
 
-        if (isBlank(dto.getState())) {
+        if (dto.getStreet() != null && isBlank(dto.getState())) {
             errors.add("State is required");
         }
 
-        if (isBlank(dto.getPostalCode())) {
+        if (dto.getStreet() != null && isBlank(dto.getPostalCode())) {
             errors.add("Postal code is required");
         }
 
-        if (isBlank(dto.getCountry())) {
+        if (dto.getStreet() != null && isBlank(dto.getCountry())) {
             errors.add("Country is required");
         }
 
-        if (isBlank(dto.getPhone())) {
+        if (dto.getStreet() != null && isBlank(dto.getPhone())) {
             errors.add("Phone is required");
         }
 
