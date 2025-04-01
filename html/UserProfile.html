@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .window-container {
+            width: 800px;
+            height: 600px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header styles */
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        /* Main content area */
+        .content {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Left navigation column styles */
+        .nav-column {
+            width: 200px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .nav-button {
+            width: 100%;
+		    height: 45px;
+            padding: 12px;
+            margin: 8px 0;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: left;
+        }
+
+        .nav-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* profile form */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* Form Styling */
+        .profile-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+	    #inline {
+	        display: inline;
+	}
+
+        .profile-form input, .profile-form select {
+	        height: 30px;
+	        display: inline;
+            padding: 6px;
+            margin: 2px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .profile-form input:focus, .profile-form select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        #address {
+            width: 75%;
+        }
+
+        .submit-button {
+            width: 150px;
+		    margin-top: 25px;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .submit-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Label styling */
+        .form-label {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+            display: inline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="window-container">
+        <!-- Header -->
+        <div class="header">
+            The Bank
+        </div>
+
+        <div class="content">
+            <!-- Left Nav Column -->
+            <div class="nav-column">
+                <button class="nav-button">Home</button>
+                <button class="nav-button" id="logOut">Log Out</button>
+		    </div>
+
+		<!-- Profile Form -->
+            <div class="main-content">
+                <h2>User Profile</h2>
+                <form class="profile-form" action="#" method="POST">
+			<div>
+                <div id="inline">
+                    <label for="first-name" class="form-label" >First Name</label>
+                    <input type="text" id="first-name" name="first-name" required>
+                </div>
+                <div id="inline">
+                    <label for="last-name" class="form-label">Last Name</label>
+                    <input type="text" id="last-name" name="last-name" required>
+                </div>
+			</div>
+			<div>
+                <div id="inline">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                <div id="inline">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+			</div>
+                <div>
+                    <label for="address1" class="form-label">Address Line 1</label>
+                    <input type="text" id="address" name="address1" required>
+                </div>
+                <div>
+                    <label for="address2" class="form-label">Address Line 2</label>
+                    <input type="text" id="address" name="address2">
+                </div>
+			<div>
+                <div id="inline">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" id="city" name="city" required>
+                </div>
+                <div id="inline">
+                    <label for="province" class="form-label">Province</label>
+                    <input type="text" id="province" name="province" required>
+                </div>
+			</div>
+            <div>
+                <label for="postal-code" class="form-label">Postal Code</label>
+                <input type="text" id="postal-code" name="postal-code" required>
+            </div>
+            <!-- <div>
+                <label for="account" class="form-label">Account</label>
+                <select id="account" name="account" required>
+                    <option value="basic">Basic</option>
+                    <option value="premium">Premium</option>
+                    <option value="enterprise">Enterprise</option>
+                </select>
+            </div> -->
+            <button type="submit" class="submit-button">Save Profile</button>
+        </form>
+    </div>
+</div>
+
+
