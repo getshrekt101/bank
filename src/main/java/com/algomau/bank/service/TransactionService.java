@@ -9,9 +9,11 @@ import com.algomau.bank.dto.request.TransactionRequestDto;
 import com.algomau.bank.dto.response.TransactionResponseDto;
 import com.algomau.bank.exception.NotFoundException;
 import com.algomau.bank.exception.UnauthorizedException;
+import com.algomau.bank.lib.BeanUtil;
 import com.algomau.bank.validator.TransactionRequestDtoValidator;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 import java.util.UUID;
@@ -60,8 +62,8 @@ public class TransactionService {
         com.algomau.bank.domain.Transaction savedTransaction = transactionRepository.findById(id).orElseThrow(() -> new NotFoundException("not-found", "transaction not found."));
         var transaction = modelMapper.map(transactionRequestDto, Transaction.class);
         Account account = savedTransaction.getAccount();
-        account.setBalance(account.getBalance() - savedTransaction.getAmount() + transactionRequestDto.getAmount());
-        transaction.setAccount(account);
+        account.setBalance(savedTransaction.getAccount().getBalance() - savedTransaction.getAmount() + transactionRequestDto.getAmount());
+        modelMapper.map(transaction, savedTransaction);
         return modelMapper.map(transactionRepository.save(savedTransaction), TransactionResponseDto.class);
     }
 

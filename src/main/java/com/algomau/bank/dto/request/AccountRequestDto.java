@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,8 +15,8 @@ import lombok.NoArgsConstructor;
 public class AccountRequestDto {
     private Double balance;
     private Type type;
-    private BankRequestDto bank;
-    private UserRequestDto user;
+    private UUID bankId;
+    private UUID userId;
 
     public enum Type {
         CHEQUEING ,

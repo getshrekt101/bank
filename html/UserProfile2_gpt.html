@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .window-container {
+            width: 800px;
+            height: 600px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header styles */
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        /* Main content area */
+        .content {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Left navigation column styles */
+        .nav-column {
+            width: 200px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .nav-button {
+            width: 100%;
+            height: 45px;
+            padding: 12px;
+            margin: 8px 0;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: left;
+        }
+
+        .nav-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* profile form */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* Form Styling */
+        .profile-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #inline {
+            display: inline;
+        }
+
+        .profile-form input, .profile-form select {
+            height: 30px;
+            display: inline;
+            padding: 6px;
+            margin: 2px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .profile-form input:focus, .profile-form select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        #address {
+            width: 75%;
+        }
+
+        .submit-button {
+            width: 150px;
+            margin-top: 25px;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .submit-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Label styling */
+        .form-label {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+            display: inline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="window-container">
+        <!-- Header -->
+        <div class="header">
+            The Bank
+        </div>
+
+        <div class="content">
+            <!-- Left Nav Column -->
+            <div class="nav-column">
+                <button class="nav-button">Home</button>
+                <button class="nav-button" id="logOut">Log Out</button>
+            </div>
+
+        <!-- Profile Form -->
+            <div class="main-content">
+                <h2>User Profile</h2>
+                <form class="profile-form" id="profile-form">
+                    <div>
+                        <div id="inline">
+                            <label for="first-name" class="form-label">First Name</label>
+                            <input type="text" id="first-name" name="first-name" required>
+                        </div>
+                        <div id="inline">
+                            <label for="last-name" class="form-label">Last Name</label>
+                            <input type="text" id="last-name" name="last-name" required>
+                        </div>
+                    </div>
+                    <div>
+                        <div id="inline">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                        <div id="inline">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="address1" class="form-label">Address Line 1</label>
+                        <input type="text" id="address" name="address1" required>
+                    </div>
+                    <div>
+                        <label for="address2" class="form-label">Address Line 2</label>
+                        <input type="text" id="address" name="address2">
+                    </div>
+                    <div>
+                        <div id="inline">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" id="city" name="city" required>
+                        </div>
+                        <div id="inline">
+                            <label for="province" class="form-label">Province</label>
+                            <input type="text" id="province" name="province" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="postal-code" class="form-label">Postal Code</label>
+                        <input type="text" id="postal-code" name="postal-code" required>
+                    </div>
+                    <button type="submit" class="submit-button">Save Profile</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Assuming user ID is available somehow (e.g., from a session or URL)
+            const userId = 'sample-user-id'; // Replace this with the actual user ID
+
+            // Function to get user data and pre-fill the form
+            async function getUserProfile() {
+                try {
+                    const response = await fetch(`http://localhost:8080/users/${userId}`);
+                    if (response.ok) {
+                        const user = await response.json();
+                        document.getElementById('first-name').value = user.firstName;
+                        document.getElementById('last-name').value = user.lastName;
+                        document.getElementById('phone').value = user.phone;
+                        document.getElementById('email').value = user.email;
+                        document.getElementById('address').value = user.address.street;
+                        document.getElementById('city').value = user.address.city;
+                        document.getElementById('province').value = user.address.state;
+                        document.getElementById('postal-code').value = user.address.postalCode;
+                    }
+                } catch (error) {
+                    console.error('Error fetching user data:', error);
+                }
+            }
+
+            // Function to update user profile data
+            async function updateUserProfile(event) {
+                event.preventDefault();
+                const formData = new FormData(event.target);
+                const userData = {
+                    firstName: formData.get('first-name'),
+                    lastName: formData.get('last-name'),
+                    phone: formData.get('phone'),
+                    email: formData.get('email'),
+                    address: {
+                        street: formData.get('address1'),
+                        city: formData.get('city'),
+                        state: formData.get('province'),
+                        postalCode: formData.get('postal-code')
+                    }
+                };
+
+                try {
+                    const response = await fetch(`http://localhost:8080/users/${userId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(userData),
+                    });
+
+                    if (response.ok) {
+                        const updatedUser = await response.json();
+                        alert('Profile updated successfully!');
+                        // Optionally update the form with new data
+                        getUserProfile();
+                    } else {
+                        alert('Failed to update profile!');
+                    }
+                } catch (error) {
+                    console.error('Error updating user profile:', error);
+                    alert('An error occurred while updating the profile');
+                }
+            }
+
+            // Fetch and display the current user data
+            getUserProfile();
+
+            // Handle form submission
+            document.getElementById('profile-form').addEventListener('submit', updateUserProfile);
+        });
+    </script>
+
+</body>
+</html>

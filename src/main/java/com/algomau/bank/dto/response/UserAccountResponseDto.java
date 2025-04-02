@@ -17,7 +17,7 @@ public class UserAccountResponseDto {
     private UUID id;
     private Role role;
     private String userName;
-    public UserRequestDto user;
+    public UserResponseDto user;
     public enum Role {
         ROLE_USER, ROLE_ADMIN, ROLE_TELLER;
     }

@@ -3,6 +3,7 @@ package com.algomau.bank.config;
 import com.algomau.bank.domain.repository.*;
 import com.algomau.bank.dto.response.TransactionResponseDto;
 import com.algomau.bank.service.*;
+import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
@@ -18,16 +19,16 @@ public class BankConfiguration {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration()
-                .setMatchingStrategy(MatchingStrategies.STRICT);
-
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
         modelMapper.map(TransactionResponseDto.class, TransactionResponseDto.class );
         return modelMapper;
     }
 
     @Bean
-    public AccountService accountService(AccountRepository accountRepository, ModelMapper modelMapper) {
-        return new AccountService(accountRepository, modelMapper);
+    public AccountService accountService(AccountRepository accountRepository, ModelMapper modelMapper, UserRepository userRepository, BankRepository bankRepository) {
+        return new AccountService(accountRepository, modelMapper, userRepository, bankRepository);
     }
 
     @Bean

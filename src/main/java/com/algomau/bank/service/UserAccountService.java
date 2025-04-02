@@ -5,9 +5,11 @@ import com.algomau.bank.domain.repository.UserAccountRepository;
 import com.algomau.bank.dto.request.UserAccountRequestDto;
 import com.algomau.bank.dto.response.UserAccountResponseDto;
 import com.algomau.bank.exception.NotFoundException;
+import com.algomau.bank.lib.BeanUtil;
 import com.algomau.bank.validator.UserAccountRequestDtoValidator;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -46,6 +48,16 @@ public class UserAccountService {
         UserAccountRequestDtoValidator.assertValid(userAccount);
         UserAccount savedUserAccount = userAccountRepository.findById(id).orElseThrow(() -> new NotFoundException("not-found", "user-account not found."));
         UserAccount user = modelMapper.map(userAccount, UserAccount.class);
+
+        user.setPassword(passwordEncoder.encode(userAccount.getPassword()));
+
+        if (user.getUser() != null) {
+            if (user.getUser().getAddress() != null) {
+                modelMapper.map(user.getUser().getAddress(), savedUserAccount.getUser().getAddress());
+            }
+            modelMapper.map(user.getUser(), savedUserAccount.getUser());
+        }
+        modelMapper.map(user, savedUserAccount);
         return modelMapper.map(userAccountRepository.save(savedUserAccount), UserAccountResponseDto.class);
     }
 

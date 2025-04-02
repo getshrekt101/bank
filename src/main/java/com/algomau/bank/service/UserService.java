@@ -7,6 +7,7 @@ import com.algomau.bank.dto.request.UserRequestDto;
 import com.algomau.bank.dto.response.UserResponseDto;
 import com.algomau.bank.exception.NotFoundException;
 import com.algomau.bank.exception.UnauthorizedException;
+import com.algomau.bank.lib.BeanUtil;
 import com.algomau.bank.validator.UserRequestDtoValidator;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -60,7 +61,13 @@ public class UserService {
         }
 
         User user = modelMapper.map(requestDto, User.class);
-        BeanUtils.copyProperties(user, savedUser, "id");
+
+        if (user.getAddress() != null) {
+            modelMapper.map(user.getAddress(), savedUser.getAddress());
+        }
+
+        modelMapper.map(user, savedUser);
+
         return modelMapper.map(userRepository.save(savedUser), UserResponseDto.class);
     }
 

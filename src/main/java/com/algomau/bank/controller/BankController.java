@@ -44,14 +44,14 @@ public class BankController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<BankResponseDto> createBank(@PathVariable UUID id, @RequestBody BankRequestDto bankRequestDto) {
+    public ResponseEntity<BankResponseDto> updateBank(@PathVariable UUID id, @RequestBody BankRequestDto bankRequestDto) {
         var response = bankService.updateBank(bankRequestDto, id);
         return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Void> createBank(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteBank(@PathVariable UUID id) {
         bankService.deleteBank(id);
         return ResponseEntity.ok().build();
     }
