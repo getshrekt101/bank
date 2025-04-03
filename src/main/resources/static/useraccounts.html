@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Accounts</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Bank Web App</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="/users.html">Users</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/useraccounts.html">User Accounts</a></li>
+                <li class="nav-item"><a class="nav-link" href="/accounts.html">Accounts</a></li>
+                <li class="nav-item"><a class="nav-link" href="/banks.html">Banks</a></li>
+                <li class="nav-item"><a class="nav-link" href="/transactions.html">Transactions</a></li>
+                <li class="nav-item"><a class="nav-link" href="/funds.html">Funds</a></li>
+            </ul>
+            <span sec:authorize="isAuthenticated()">
+          <a class="btn btn-outline-light" href="/logout">Logout</a>
+        </span>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <h2 class="mb-4">User Account Management</h2>
+
+    <!-- Buttons -->
+    <div class="mb-3 d-flex gap-2">
+        <button class="btn btn-outline-primary" onclick="loadUserAccounts()">Get All User Accounts</button>
+        <button class="btn btn-outline-warning" type="button" onclick="updateUserAccount()">PUT User Account</button>
+    </div>
+
+    <!-- Create or Update UserAccount Form -->
+    <form id="userAccountForm" class="mb-4">
+        <input type="hidden" id="userAccountId">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="Username" id="username" required />
+            </div>
+            <div class="col-md-6">
+                <input type="password" class="form-control" placeholder="Password" id="password" required />
+            </div>
+            <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="User ID (used as SIN)" id="userId" required />
+            </div>
+            <div class="col-md-6">
+                <select class="form-select" id="role" required>
+                    <option value="">Select Role</option>
+                    <option value="ROLE_USER">ROLE_USER</option>
+                    <option value="ROLE_ADMIN">ROLE_ADMIN</option>
+                    <option value="ROLE_TELLER">ROLE_TELLER</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <select class="form-select" id="userType" required>
+                    <option value="">Select User Type</option>
+                    <option value="EMPLOYEE">EMPLOYEE</option>
+                    <option value="CUSTOMER">CUSTOMER</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="City" id="city" required />
+            </div>
+            <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="State" id="state" required />
+            </div>
+            <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="Country" id="country" required />
+            </div>
+            <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="Phone" id="phone" required />
+            </div>
+            <div class="col-md-6">
+                <select class="form-select" id="addressType" required>
+                    <option value="">Select Address Type</option>
+                    <option value="BUSINESS">BUSINESS</option>
+                    <option value="PERSONAL">PERSONAL</option>
+                </select>
+            </div>
+        </div>
+        <button class="btn btn-success mt-3" type="submit">Submit</button>
+    </form>
+
+    <!-- Search by ID -->
+    <div class="mb-3">
+        <div class="input-group">
+            <input type="text" id="searchUserAccountId" class="form-control" placeholder="Enter User Account ID" />
+            <button class="btn btn-outline-info" onclick="getUserAccountById()">Get User Account</button>
+        </div>
+    </div>
+
+    <h3>User Accounts List</h3>
+    <table class="table table-bordered" id="userAccountTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>User ID</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+    const api = 'http://localhost:8080/useraccounts';
+
+    document.getElementById('userAccountForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = userAccountId.value;
+        const account = buildUserAccount();
+        try {
+            if (id) {
+                await axios.put(`${api}/${id}`, account);
+            } else {
+                await axios.post(api, account);
+            }
+            loadUserAccounts();
+            e.target.reset();
+            userAccountId.value = '';
+        } catch (err) {
+            alert('Error saving user account');
+            console.error(err);
+        }
+    });
+
+    let cachedUser = null;
+    let cachedAddress = null;
+
+    function buildUserAccount() {
+        // Build full user account payload for POST/PUT using Swagger format
+        return {
+            username: username.value,
+            password: password.value,
+            user: {
+                id: cachedUser?.id,
+                email: username.value + '@example.com',
+                sinNumber: userId.value,
+                type: userType.value,
+                address: {
+                    id: cachedAddress?.id,
+                    city: city.value,
+                    state: state.value,
+                    country: country.value,
+                    phone: phone.value,
+                    type: addressType.value
+                }
+            },
+            role: role.value
+        };
+    }
+
+    async function updateUserAccount() {
+        const id = userAccountId.value;
+        if (!id) return alert('Please select a user account to update');
+        try {
+            const account = buildUserAccount();
+            await axios.put(`${api}/${id}`, account);
+            alert('User account updated successfully');
+            loadUserAccounts();
+        } catch (err) {
+            alert('Update failed');
+            console.error(err);
+        }
+    }
+
+    async function getUserAccountById() {
+        const id = document.getElementById('searchUserAccountId').value;
+        if (!id) return;
+        try {
+            const res = await axios.get(`${api}/${id}`);
+            const acc = res.data;
+            const row = `
+          <tr>
+            <td>${acc.id}</td>
+            <td>${acc.username}</td>
+            <td>${acc.user.id}</td>
+            <td>
+              <button class="btn btn-sm btn-info" onclick="editUserAccount('${acc.id}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteUserAccount('${acc.id}')">Delete</button>
+            </td>
+          </tr>`;
+            document.querySelector('#userAccountTable tbody').innerHTML = row;
+        } catch (err) {
+            console.error('User Account not found', err);
+            document.querySelector('#userAccountTable tbody').innerHTML = '<tr><td colspan="4" class="text-center text-muted">User Account not found</td></tr>';
+        }
+    }
+
+    async function loadUserAccounts() {
+        try {
+            const res = await axios.get(api);
+            const rows = res.data.map(acc => `
+          <tr>
+            <td>${acc.id}</td>
+            <td>${acc.username}</td>
+            <td>${acc.user.id}</td>
+            <td>
+              <button class="btn btn-sm btn-info" onclick="editUserAccount('${acc.id}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteUserAccount('${acc.id}')">Delete</button>
+            </td>
+          </tr>`);
+            document.querySelector('#userAccountTable tbody').innerHTML = rows.join('');
+        } catch (err) {
+            console.error('Failed to load user accounts', err);
+        }
+    }
+
+    async function editUserAccount(id) {
+        try {
+            const res = await axios.get(`${api}/${id}`);
+            const acc = res.data;
+            cachedUser = acc.user;
+            cachedAddress = acc.user.address;
+            userAccountId.value = acc.id;
+            username.value = acc.username;
+            password.value = '';
+            userId.value = acc.user.sinNumber;
+            role.value = acc.role;
+            userType.value = acc.user.type;
+            city.value = acc.user.address.city;
+            state.value = acc.user.address.state;
+            country.value = acc.user.address.country;
+            phone.value = acc.user.address.phone;
+            addressType.value = acc.user.address.type;
+        } catch (err) {
+            alert('Failed to load user account');
+            console.error(err);
+        }
+    }
+
+    async function deleteUserAccount(id) {
+        if (!confirm('Are you sure?')) return;
+        try {
+            await axios.delete(`${api}/${id}`);
+            loadUserAccounts();
+        } catch (err) {
+            alert('Delete failed');
+            console.error(err);
+        }
+    }
+
+    loadUserAccounts();
+</script>
+</body>
+</html>

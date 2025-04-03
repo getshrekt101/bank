@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accounts</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Bank Web App</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="/users.html">Users</a></li>
+                <li class="nav-item"><a class="nav-link" href="/useraccounts.html">User Accounts</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/accounts.html">Accounts</a></li>
+                <li class="nav-item"><a class="nav-link" href="/banks.html">Banks</a></li>
+                <li class="nav-item"><a class="nav-link" href="/transactions.html">Transactions</a></li>
+                <li class="nav-item"><a class="nav-link" href="/funds.html">Funds</a></li>
+            </ul>
+            <span sec:authorize="isAuthenticated()">
+        <a class="btn btn-outline-light" href="/logout">Logout</a>
+      </span>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <h2 class="mb-4">Account Management</h2>
+    <div class="mb-3 d-flex gap-2">
+        <button class="btn btn-outline-primary" onclick="loadAccounts()">Get All Accounts</button>
+        <button class="btn btn-outline-warning" type="button" onclick="updateAccount()">PUT Account</button>
+    </div>
+
+    <form id="accountForm" class="mb-4">
+        <input type="hidden" id="accountId">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <input type="number" step="0.01" class="form-control" placeholder="Balance" id="balance" required />
+            </div>
+            <div class="col-md-4">
+                <select class="form-select" id="type" required>
+                    <option value="">Select Account Type</option>
+                    <option value="CHEQUEING">CHEQUEING</option>
+                    <option value="SAVING">SAVING</option>
+                    <option value="CREDIT">CREDIT</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="Bank ID" id="bankId" required />
+            </div>
+            <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="User ID" id="userId" required />
+            </div>
+        </div>
+        <button class="btn btn-success mt-3" type="submit">Submit</button>
+    </form>
+
+    <div class="mb-3">
+        <div class="input-group">
+            <input type="text" id="searchAccountId" class="form-control" placeholder="Enter Account ID to Fetch" />
+            <button class="btn btn-outline-info" onclick="getAccountById()">Get Account</button>
+        </div>
+    </div>
+
+    <h3>Accounts List</h3>
+    <table class="table table-bordered" id="accountTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Balance</th>
+            <th>Type</th>
+            <th>Bank ID</th>
+            <th>User ID</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        const api = 'http://localhost:8080/accounts';
+        let cachedAccount = null;
+
+        document.getElementById('accountForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = accountId.value;
+            const account = buildAccount();
+            try {
+                if (id) {
+                    await axios.put(`${api}/${id}`, account);
+                } else {
+                    await axios.post(api, account);
+                }
+                loadAccounts();
+                e.target.reset();
+                accountId.value = '';
+            } catch (err) {
+                alert('Error saving account');
+                console.error(err);
+            }
+        });
+
+        function buildAccount() {
+            return {
+                balance: parseFloat(balance.value),
+                type: type.value,
+                bankId: bankId.value,
+                userId: userId.value
+            };
+        }
+
+        async function updateAccount() {
+            const id = accountId.value;
+            if (!id) return alert('Please select an account to update');
+            try {
+                const account = buildAccount();
+                await axios.put(`${api}/${id}`, account);
+                alert('Account updated successfully');
+                loadAccounts();
+            } catch (err) {
+                alert('Update failed');
+                console.error(err);
+            }
+        }
+
+        async function getAccountById() {
+            const id = document.getElementById('searchAccountId').value;
+            if (!id) return;
+            try {
+                const res = await axios.get(`${api}/${id}`);
+                const acc = res.data;
+                const row = `
+        <tr>
+          <td>${acc.id}</td>
+          <td>${acc.balance}</td>
+          <td>${acc.type}</td>
+          <td>${acc.bank.id}</td>
+          <td>${acc.user.id}</td>
+          <td>
+            <button class="btn btn-sm btn-info" onclick="editAccount('${acc.id}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteAccount('${acc.id}')">Delete</button>
+          </td>
+        </tr>`;
+                document.querySelector('#accountTable tbody').innerHTML = row;
+            } catch (err) {
+                console.error('Account not found', err);
+                document.querySelector('#accountTable tbody').innerHTML = '<tr><td colspan="6" class="text-center text-muted">Account not found</td></tr>';
+            }
+        }
+
+        async function loadAccounts() {
+            try {
+                const res = await axios.get(api);
+                const rows = res.data.map(acc => `
+        <tr>
+          <td>${acc.id}</td>
+          <td>${acc.balance}</td>
+          <td>${acc.type}</td>
+          <td>${acc.bank.id}</td>
+          <td>${acc.user.id}</td>
+          <td>
+            <button class="btn btn-sm btn-info" onclick="editAccount('${acc.id}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteAccount('${acc.id}')">Delete</button>
+          </td>
+        </tr>`);
+                document.querySelector('#accountTable tbody').innerHTML = rows.join('');
+            } catch (err) {
+                console.error('Failed to load accounts', err);
+            }
+        }
+
+        async function editAccount(id) {
+            try {
+                const res = await axios.get(`${api}/${id}`);
+                const acc = res.data;
+                cachedAccount = acc;
+                accountId.value = acc.id;
+                balance.value = acc.balance;
+                type.value = acc.type;
+                bankId.value = acc.bank.id;
+                userId.value = acc.user.id;
+            } catch (err) {
+                alert('Failed to load account');
+                console.error(err);
+            }
+        }
+
+        async function deleteAccount(id) {
+            if (!confirm('Are you sure?')) return;
+            try {
+                await axios.delete(`${api}/${id}`);
+                loadAccounts();
+            } catch (err) {
+                alert('Delete failed');
+                console.error(err);
+            }
+        }
+
+        loadAccounts();
+    </script>
+</div>
+
+</body>
+</html>

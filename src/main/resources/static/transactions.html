@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Bank Web App</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="/users.html">Users</a></li>
+                <li class="nav-item"><a class="nav-link" href="/useraccounts.html">User Accounts</a></li>
+                <li class="nav-item"><a class="nav-link" href="/accounts.html">Accounts</a></li>
+                <li class="nav-item"><a class="nav-link" href="/banks.html">Banks</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/transactions.html">Transactions</a></li>
+                <li class="nav-item"><a class="nav-link" href="/funds.html">Funds</a></li>
+            </ul>
+            <span sec:authorize="isAuthenticated()">
+          <a class="btn btn-outline-light" href="/logout">Logout</a>
+        </span>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <h2 class="mb-4">Transaction Management</h2>
+    <div class="mb-3 d-flex gap-2">
+        <button class="btn btn-outline-primary" onclick="loadTransactions()">Get All Transactions</button>
+        <button class="btn btn-outline-warning" type="button" onclick="updateTransaction()">PUT Transaction</button>
+    </div>
+
+    <form id="transactionForm" class="mb-4">
+        <input type="hidden" id="transactionId">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <input type="number" step="0.01" class="form-control" placeholder="Amount" id="amount" required />
+            </div>
+            <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="Item Name" id="itemName" required />
+            </div>
+            <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="Organization Name" id="organizationName" required />
+            </div>
+            <div class="col-md-4">
+                <select class="form-select" id="status" required>
+                    <option value="">Select Status</option>
+                    <option value="PENDING">PENDING</option>
+                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                    <option value="COMPLETED">COMPLETED</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="Account ID" id="accountId" required />
+            </div>
+        </div>
+        <button class="btn btn-success mt-3" type="submit">Submit</button>
+    </form>
+
+    <div class="mb-3">
+        <div class="input-group">
+            <input type="text" id="searchTransactionId" class="form-control" placeholder="Enter Transaction ID to Fetch" />
+            <button class="btn btn-outline-info" onclick="getTransactionById()">Get Transaction</button>
+        </div>
+    </div>
+
+    <h3>Transaction List</h3>
+    <table class="table table-bordered" id="transactionTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Amount</th>
+            <th>Item</th>
+            <th>Organization</th>
+            <th>Status</th>
+            <th>Account ID</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+    const api = 'http://localhost:8080/transactions';
+
+    document.getElementById('transactionForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = transactionId.value;
+        const tx = buildTransaction();
+        try {
+            if (id) {
+                await axios.put(`${api}/${id}`, tx);
+            } else {
+                await axios.post(api, tx);
+            }
+            loadTransactions();
+            e.target.reset();
+            transactionId.value = '';
+        } catch (err) {
+            alert('Error saving transaction');
+            console.error(err);
+        }
+    });
+
+    function buildTransaction() {
+        return {
+            amount: parseFloat(amount.value),
+            itemName: itemName.value,
+            organizationName: organizationName.value,
+            status: status.value,
+            accountId: accountId.value
+        };
+    }
+
+    async function updateTransaction() {
+        const id = transactionId.value;
+        if (!id) return alert('Please select a transaction to update');
+        try {
+            const tx = buildTransaction();
+            await axios.put(`${api}/${id}`, tx);
+            alert('Transaction updated successfully');
+            loadTransactions();
+        } catch (err) {
+            alert('Update failed');
+            console.error(err);
+        }
+    }
+
+    async function getTransactionById() {
+        const id = document.getElementById('searchTransactionId').value;
+        if (!id) return;
+        try {
+            const res = await axios.get(`${api}/${id}`);
+            const tx = res.data;
+            const row = `
+          <tr>
+            <td>${tx.id}</td>
+            <td>${tx.amount}</td>
+            <td>${tx.itemName}</td>
+            <td>${tx.organizationName}</td>
+            <td>${tx.status}</td>
+            <td>${tx.account.id}</td>
+            <td>
+              <button class="btn btn-sm btn-info" onclick="editTransaction('${tx.id}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteTransaction('${tx.id}')">Delete</button>
+            </td>
+          </tr>`;
+            document.querySelector('#transactionTable tbody').innerHTML = row;
+        } catch (err) {
+            console.error('Transaction not found', err);
+            document.querySelector('#transactionTable tbody').innerHTML = '<tr><td colspan="7" class="text-center text-muted">Transaction not found</td></tr>';
+        }
+    }
+
+    async function loadTransactions() {
+        try {
+            const res = await axios.get(api);
+            const rows = res.data.map(tx => `
+          <tr>
+            <td>${tx.id}</td>
+            <td>${tx.amount}</td>
+            <td>${tx.itemName}</td>
+            <td>${tx.organizationName}</td>
+            <td>${tx.status}</td>
+            <td>${tx.account.id}</td>
+            <td>
+              <button class="btn btn-sm btn-info" onclick="editTransaction('${tx.id}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteTransaction('${tx.id}')">Delete</button>
+            </td>
+          </tr>`);
+            document.querySelector('#transactionTable tbody').innerHTML = rows.join('');
+        } catch (err) {
+            console.error('Failed to load transactions', err);
+        }
+    }
+
+    async function editTransaction(id) {
+        try {
+            const res = await axios.get(`${api}/${id}`);
+            const tx = res.data;
+            transactionId.value = tx.id;
+            amount.value = tx.amount;
+            itemName.value = tx.itemName;
+            organizationName.value = tx.organizationName;
+            status.value = tx.status;
+            accountId.value = tx.account.id;
+        } catch (err) {
+            alert('Failed to load transaction');
+            console.error(err);
+        }
+    }
+
+    async function deleteTransaction(id) {
+        if (!confirm('Are you sure?')) return;
+        try {
+            await axios.delete(`${api}/${id}`);
+            loadTransactions();
+        } catch (err) {
+            alert('Delete failed');
+            console.error(err);
+        }
+    }
+
+    loadTransactions();
+</script>
+</body>
+</html>
