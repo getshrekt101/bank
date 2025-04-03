@@ -103,6 +103,17 @@ Swagger URLs to Try in Browser:
 
     OpenAPI YAML: http://localhost:8080/v3/api-docs.yaml
 
+HTML Pages URLs to Try in Browser:
+
+    http://localhost:8080/
+    http://localhost:8080/users.html
+    http://localhost:8080/useraccounts.html
+    http://localhost:8080/accounts.html
+    http://localhost:8080/banks.html
+    http://localhost:8080/transactions.html
+    http://localhost:8080/funds.html
+    http://localhost:8080/login.html
+    http://localhost:8080/loggout.html
 
 **PREMADE DB AUTHENTICATIONS**
 
