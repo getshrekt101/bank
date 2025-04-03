@@ -53,7 +53,7 @@ public class Address {
     private LocalDateTime createdDate;
 
     @LastModifiedDate
-    @Column(name = "updated_date")
+    @Column(name = "updated_date", updatable = false)
     private LocalDateTime updatedDate;
 
     public enum Type {

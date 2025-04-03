@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserAccountRequestDto {
     private Role role;
-    private String userName;
+    private String username;
     private String password;
     public UserRequestDto user;
     public enum Role {

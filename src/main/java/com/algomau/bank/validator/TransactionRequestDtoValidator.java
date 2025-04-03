@@ -29,11 +29,6 @@ public class TransactionRequestDtoValidator {
             errors.add("Item name is required");
         }
 
-        // Status
-        if (dto.getStatus() == null) {
-            errors.add("Transaction status is required");
-        }
-
         // Account
         if (dto.getAccountId() == null) {
             errors.add("Associated account is required");

@@ -16,7 +16,7 @@ import java.util.UUID;
 public class UserAccountResponseDto {
     private UUID id;
     private Role role;
-    private String userName;
+    private String username;
     public UserResponseDto user;
     public enum Role {
         ROLE_USER, ROLE_ADMIN, ROLE_TELLER;

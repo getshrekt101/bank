@@ -29,6 +29,10 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .permitAll()
+                )
                 .csrf(csrf -> csrf.disable())
                 .headers(headers -> headers.frameOptions().disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -54,7 +58,7 @@ public class WebSecurityConfig {
             }
 
             return User.builder()
-                    .username(account.getUserName())
+                    .username(account.getUsername())
                     .password(account.getPassword())
                     .authorities(account.getRole().name())
                     .build();

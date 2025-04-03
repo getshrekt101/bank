@@ -36,22 +36,22 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private Type type;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonManagedReference
     private List<Transaction> transactions;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne // no cascade to avoid deleting bank
     @JoinColumn(name = "bank_id")
     @JsonBackReference(value = "bank-account")
     private Bank bank;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne // no cascade to avoid deleting user
     @JoinColumn(name = "user_id")
     @JsonBackReference(value = "user-account")
     private User user;
 
     @CreatedDate
-    @Column(name = "created_date")
+    @Column(name = "created_date", updatable = false)
     private LocalDateTime createdDate;
 
     @LastModifiedDate
@@ -59,7 +59,7 @@ public class Account {
     private LocalDateTime updatedDate;
 
     public enum Type {
-        CHEQUEING ,
+        CHEQUEING,
         SAVING,
         CREDIT;
     }

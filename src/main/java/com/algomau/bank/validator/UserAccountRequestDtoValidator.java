@@ -23,8 +23,8 @@ public class UserAccountRequestDtoValidator {
             errors.add("User role is required");
         }
 
-        if (isBlank(dto.getUserName())) {
-            errors.add("Username is required");
+        if (isBlank(dto.getUsername())) {
+            errors.add("username is required");
         }
 
         if (isBlank(dto.getPassword())) {

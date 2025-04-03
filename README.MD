@@ -90,7 +90,7 @@ Once the app is running:
 
     JDBC URL: jdbc:h2:mem:bankdb
 
-    Username: bank
+    username: bank
 
     Password: bank
 

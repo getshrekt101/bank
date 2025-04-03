@@ -66,10 +66,10 @@ public class UserAccountService {
     }
 
     public UserAccount findByUserName(String username) {
-        return userAccountRepository.findByUserName(username);
+        return userAccountRepository.findByUsername(username);
     }
 
     public UserAccount getUserAccountBySecurityContext() {
-        return userAccountRepository.findByUserName(getCurrentUser().getUsername());
+        return userAccountRepository.findByUsername(getCurrentUser().getUsername());
     }
 }

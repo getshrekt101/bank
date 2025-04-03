@@ -30,7 +30,7 @@ public class DataInitializer {
     public CommandLineRunner seedEntities() {
         return args -> {
             UserAccount admin = UserAccount.builder()
-                    .userName("admin")
+                    .username("admin")
                     .password(passwordEncoder.encode("admin"))
                     .user(User.builder()
                             .email("admin@algomau.com")
@@ -48,7 +48,7 @@ public class DataInitializer {
                     .build();
 
             UserAccount user = UserAccount.builder()
-                    .userName("user")
+                    .username("user")
                     .password(passwordEncoder.encode("user"))
                     .user(User.builder()
                             .email("user@algomau.com")
@@ -66,7 +66,7 @@ public class DataInitializer {
                     .build();
 
             UserAccount teller = UserAccount.builder()
-                    .userName("teller")
+                    .username("teller")
                     .password(passwordEncoder.encode("teller"))
                     .user(User.builder()
                             .email("teller@algomau.com")

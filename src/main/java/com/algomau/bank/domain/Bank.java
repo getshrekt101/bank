@@ -41,7 +41,7 @@ public class Bank {
     @Enumerated(EnumType.STRING)
     private Type type;
 
-    @OneToMany(mappedBy = "bank", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "bank", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "bank-account")
     private List<Account> account;
 
@@ -54,7 +54,7 @@ public class Bank {
     private LocalDateTime createdDate;
 
     @LastModifiedDate
-    @Column(name = "updated_date")
+    @Column(name = "updated_date", updatable = false)
     private LocalDateTime updatedDate;
 
     public enum Type {

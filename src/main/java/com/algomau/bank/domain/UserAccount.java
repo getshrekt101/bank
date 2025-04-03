@@ -31,7 +31,7 @@ public class UserAccount {
     private Role role;
 
     @Column(name = "user_name", unique=true)
-    private String userName;
+    private String username;
 
     @Column(name = "password")
     private String password;
@@ -41,7 +41,7 @@ public class UserAccount {
     public User user;
 
     @CreatedDate
-    @Column(name = "created_date")
+    @Column(name = "created_date", updatable = false)
     private LocalDateTime createdDate;
 
     @LastModifiedDate
